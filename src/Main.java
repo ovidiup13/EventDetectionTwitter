@@ -6,9 +6,8 @@ public class Main {
     private static String COMMA = ",";
     private static String SPACE = " ";
 
-
     public static void main(String[] args) throws IOException {
-        String path = "WebScienceAE/data/1day/clusters.sortedby.clusterid.csv";
+        String path = args[0];
         Map<String, Cluster> tweets = processInputFile(path);
         System.out.println(tweets.size());
     }
