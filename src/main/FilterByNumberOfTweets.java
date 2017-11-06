@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class FilterByNumberOfTweets {
 
-    private static final int NUMBER_OF_TWEETS = 4;
+    private static final int NUMBER_OF_TWEETS = 13;
     private static final String OUTPUT_FILE_NAME = "bynumber";
     private static final String FILE_EXTENSION = ".csv";
 

@@ -11,6 +11,11 @@ public class CSVProcessor implements IOProcessor {
     private static String COMMA = ",";
     private static String SPACE = " ";
 
+    /**
+     * Method that reads in a CSV file from a path and returns a map of clusters.
+     * @param path path to CSV file
+     * @return map of clusters, indexed by cluster ID
+     */
     @Override
     public Map<String, Cluster> readClusters(String path) {
         Map<String, Cluster> clusters = new TreeMap<>();
@@ -55,6 +60,11 @@ public class CSVProcessor implements IOProcessor {
         return clusters;
     }
 
+    /**
+     * Method that writes the list of clusters to a file.
+     * @param clusters list of {@link Cluster} objects
+     * @param path path to file
+     */
     @Override
     public void writeClusters(List<Cluster> clusters, String path) {
 
