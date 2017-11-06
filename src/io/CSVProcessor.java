@@ -76,7 +76,8 @@ public class CSVProcessor implements IOProcessor {
                 });
             });
 
-        } catch (FileNotFoundException e) {
+            bw.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -93,6 +94,11 @@ public class CSVProcessor implements IOProcessor {
         StringBuilder sb = new StringBuilder();
 
         for(Tweet tweet : cluster.getTweets()){
+
+            if(cluster.getClusterId().equals("94")){
+                System.out.println("here");
+            }
+
             sb.append(cluster.getClusterId()).append(COMMA);
             sb.append(cluster.getClusterNameEntity()).append(COMMA);
             sb.append(tweet.getTweetId()).append(COMMA);
