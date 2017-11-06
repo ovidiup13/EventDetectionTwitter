@@ -1,18 +1,20 @@
-import java.io.*;
-import java.util.*;
+package io;
 
-public class Main {
+import model.Cluster;
+import model.Tweet;
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.TreeMap;
+
+public class CSVProcessor implements IOProcessor {
 
     private static String COMMA = ",";
     private static String SPACE = " ";
 
-    public static void main(String[] args) throws IOException {
-        String path = args[0];
-        Map<String, Cluster> tweets = processInputFile(path);
-        System.out.println(tweets.size());
-    }
-
-    private static Map<String, Cluster> processInputFile(String path) {
+    @Override
+    public Map<String, Cluster> readClusters(String path) {
         Map<String, Cluster> clusters = new TreeMap<>();
 
         try {
@@ -52,5 +54,10 @@ public class Main {
         }
 
         return clusters;
+    }
+
+    @Override
+    public void writeClusters(Map<String, Cluster> clusters, String path) {
+
     }
 }
