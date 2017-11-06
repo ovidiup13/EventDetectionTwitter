@@ -1,5 +1,7 @@
 package main;
 
+import filters.ClusterFilter;
+import filters.FilterByTweets;
 import io.CSVProcessor;
 import io.IOProcessor;
 import model.Cluster;
@@ -22,15 +24,20 @@ public class FilterByNumberOfTweets {
         long start = System.currentTimeMillis();
 
         IOProcessor processor = new CSVProcessor();
+        ClusterFilter filterByTweets = new FilterByTweets(NUMBER_OF_TWEETS);
 
+        // read from csv file
         Map<String, Cluster> clusters = processor.readClusters(inputPath);
 
-        List<Cluster> filtered = clusters.values().stream().filter(cluster -> cluster.getTweets().size() > NUMBER_OF_TWEETS).collect(Collectors.toList());
+        // pipe into filter
+        List<Cluster> filtered = filterByTweets.execute(clusters.values());
 
+        // write to csv file
         processor.writeClusters(filtered, outputPath + OUTPUT_FILE_NAME + NUMBER_OF_TWEETS + FILE_EXTENSION);
 
         long stop = System.currentTimeMillis();
 
+        // display performance
         System.out.println(stop - start);
     }
 }
