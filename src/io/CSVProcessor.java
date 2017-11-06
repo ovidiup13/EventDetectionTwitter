@@ -66,7 +66,7 @@ public class CSVProcessor implements IOProcessor {
      * @param path path to file
      */
     @Override
-    public void writeClusters(List<Cluster> clusters, String path) {
+    public void writeClusters(Collection<Cluster> clusters, String path) {
 
         try {
 

@@ -54,4 +54,8 @@ public class Cluster {
     public void addTweet(Tweet tweet){
         this.tweets.add(tweet);
     }
+
+    public void addAllTweets(List<Tweet> tweets){
+        this.tweets.addAll(tweets);
+    }
 }
