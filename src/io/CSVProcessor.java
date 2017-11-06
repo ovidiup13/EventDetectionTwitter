@@ -4,9 +4,7 @@ import model.Cluster;
 import model.Tweet;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class CSVProcessor implements IOProcessor {
 
@@ -39,8 +37,9 @@ public class CSVProcessor implements IOProcessor {
                 Tweet tweet = new Tweet();
                 tweet.setTweetId(tokens[2]);
                 tweet.setTimestamp(Long.parseLong(tokens[3]));
-                tweet.setTweetTokens(Arrays.asList(tokens[4].split(SPACE)));
-                tweet.setTweetText(tokens[5]);
+                tweet.setUserId(tokens[4]);
+                tweet.setTweetTokens(Arrays.asList(tokens[5].split(SPACE)));
+                tweet.setTweetText(tokens[6]);
 
                 cluster.addTweet(tweet);
 
@@ -57,7 +56,55 @@ public class CSVProcessor implements IOProcessor {
     }
 
     @Override
-    public void writeClusters(Map<String, Cluster> clusters, String path) {
+    public void writeClusters(List<Cluster> clusters, String path) {
 
+        try {
+
+            File outputFile = new File(path);
+            OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(outputFile));
+            BufferedWriter bw = new BufferedWriter(writer);
+
+            clusters.forEach(cluster -> {
+                List<String> tweets = clusterToLines(cluster);
+                tweets.forEach(tweet -> {
+                    try {
+                        bw.write(tweet);
+                        bw.newLine();
+                    } catch (IOException e) {
+                        System.err.println(e.getMessage());
+                    }
+                });
+            });
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Method that formats tweets line by line to be written in CSV file.
+     * @param cluster {@link Cluster} model object
+     * @return list of tweets
+     */
+    private List<String> clusterToLines(Cluster cluster){
+
+        List<String> tweetLines = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+
+        for(Tweet tweet : cluster.getTweets()){
+            sb.append(cluster.getClusterId()).append(COMMA);
+            sb.append(cluster.getClusterNameEntity()).append(COMMA);
+            sb.append(tweet.getTweetId()).append(COMMA);
+            sb.append(tweet.getTimestamp()).append(COMMA);
+            sb.append(tweet.getUserId()).append(COMMA);
+            sb.append(String.join(SPACE, tweet.getTweetTokens())).append(COMMA);
+            sb.append(tweet.getTweetText());
+
+            tweetLines.add(sb.toString());
+            sb.setLength(0);
+        }
+
+        return tweetLines;
     }
 }

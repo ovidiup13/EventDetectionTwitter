@@ -13,12 +13,14 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         String inputPath = args[0];
+        String outputPath = args[1];
 
         IOProcessor processor = new CSVProcessor();
 
         Map<String, Cluster> clusters = processor.readClusters(inputPath);
 
         List<Cluster> filtered = clusters.values().stream().filter(cluster -> cluster.getTweets().size() > 10).collect(Collectors.toList());
-        System.out.println(filtered.size());
+
+        processor.writeClusters(filtered, outputPath);
     }
 }
