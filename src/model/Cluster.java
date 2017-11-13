@@ -53,9 +53,15 @@ public class Cluster {
 
     public void addTweet(Tweet tweet){
         this.tweets.add(tweet);
+        calculateCentroidTimestamp();
     }
 
     public void addAllTweets(List<Tweet> tweets){
         this.tweets.addAll(tweets);
+        calculateCentroidTimestamp();
+    }
+
+    private void calculateCentroidTimestamp(){
+        this.timestamp = tweets.stream().mapToLong(Tweet::getTimestamp).sum() / tweets.size();
     }
 }

@@ -1,13 +1,23 @@
 package filters;
 
 import model.Cluster;
-import model.Tweet;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MergeNamedEntityFilter implements ClusterFilter {
 
-//    private static final int WINDOW = 3600000; // 1 hour window
+    private static final long DEFAULT_WINDOW = 3600000; // 1 hour window
+    private long window;
+
+    public MergeNamedEntityFilter(){
+        this.window = DEFAULT_WINDOW;
+    }
+
+    public MergeNamedEntityFilter(long window){
+        this.window = window;
+    }
 
     @Override
     public Collection<Cluster> execute(Collection<Cluster> clusters) {

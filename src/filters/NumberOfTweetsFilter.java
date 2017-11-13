@@ -5,11 +5,11 @@ import model.Cluster;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class FilterByTweets implements ClusterFilter {
+public class NumberOfTweetsFilter implements ClusterFilter {
 
     private int numberOfTweets;
 
-    public FilterByTweets(int n) {
+    public NumberOfTweetsFilter(int n) {
         this.numberOfTweets = n;
     }
 

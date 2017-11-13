@@ -1,16 +1,14 @@
 package main;
 
 import filters.ClusterFilter;
-import filters.FilterByTweets;
+import filters.NumberOfTweetsFilter;
 import io.CSVProcessor;
 import io.IOProcessor;
 import model.Cluster;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class FilterByNumberOfTweets {
 
@@ -25,7 +23,7 @@ public class FilterByNumberOfTweets {
         long start = System.currentTimeMillis();
 
         IOProcessor processor = new CSVProcessor();
-        ClusterFilter filterByTweets = new FilterByTweets(NUMBER_OF_TWEETS);
+        ClusterFilter filterByTweets = new NumberOfTweetsFilter(NUMBER_OF_TWEETS);
 
         // read from csv file
         Map<String, Cluster> clusters = processor.readClusters(inputPath);
