@@ -1,0 +1,12 @@
+body {
+    margin: 10vh;
+}
+
+header {
+    text-align: center;
+}
+
+.content {
+    margin-left: 20vh;
+    margin-right: 20vh;
+}

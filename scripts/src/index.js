@@ -11,6 +11,7 @@ const outputPath = "../public/assets";
 
 fs.readdir(inputPath, (err, items) => {
     runEval(items).then(data => {
+        data.sort((d1, d2) => parseInt(d1.file) - parseInt(d2.file));
         fs.writeFile(path.join(outputPath, outputFile), JSON.stringify(data), err => {
             if (err) {
                 console.error(err);
@@ -26,7 +27,7 @@ function runEval(files) {
         results.push(evaluation.runEvaluation(path.join(inputPath, file))
             .then(data => {
                 return {
-                    file: file,
+                    file: file.substring(0, file.indexOf(".")),
                     data: parse.parseOutput(data)
                 };
             }).catch(err => {
