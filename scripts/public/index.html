@@ -3,6 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Web Science - Event Detection Results</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
@@ -16,19 +18,25 @@
     <header>
         <h1 id="title">Web Science - Event Detection Results</h1>
         <div class="container">
-            <ul class="nav justify-content-center">
+            <ul class="nav nav-tabs justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#1day" data-toggle="tab">1 Day</a>
+                    <a class="nav-link active" href="#1day-filtered" data-toggle="tab" role="tab">1 Day Filtered</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#7days" data-toggle="tab">7 Days</a>
+                    <a class="nav-link" href="#1day-merged" data-toggle="tab" role="tab">1 Day Merged</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#7days-filtered" data-toggle="tab" role="tab">7 Days Filtered</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#7days-merged" data-toggle="tab" role="tab">7 Days Merged</a>
                 </li>
             </ul>
         </div>
     </header>
 
     <div class="tab-content content">
-        <section id="1day" class="tab-pane active">
+        <section id="1day-filtered" role="tabpanel" class="tab-pane active">
             <header>
                 <h2>1 Day Data - Filtered</h2>
             </header>
@@ -40,14 +48,40 @@
                 <div id="day1-filtered-recall-chart"></div>
             </main>
         </section>
-        <section id="7days" class="tab-pane">
+        <section id="1day-merged" role="tabpanel" class="tab-pane">
             <header>
                 <h2>1 Day Data - Merged</h2>
             </header>
             <main>
+                <div id="day1-merged-events-detected-chart"></div>
+                <div id="day1-merged-total-clusters-chart"></div>
                 <div id="day1-merged-fmeasure-chart"></div>
                 <div id="day1-merged-precision-chart"></div>
                 <div id="day1-merged-recall-chart"></div>
+            </main>
+        </section>
+        <section id="7days-filtered" role="tabpanel" class="tab-pane active">
+            <header>
+                <h2>7 Days Data - Filtered</h2>
+            </header>
+            <main>
+                <div id="day7-filtered-events-detected-chart"></div>
+                <div id="day7-filtered-total-clusters-chart"></div>
+                <div id="day7-filtered-fmeasure-chart"></div>
+                <div id="day7-filtered-precision-chart"></div>
+                <div id="day7-filtered-recall-chart"></div>
+            </main>
+        </section>
+        <section id="7days-merged" role="tabpanel" class="tab-pane">
+            <header>
+                <h2>7 Days Data - Merged</h2>
+            </header>
+            <main>
+                <div id="day7-merged-events-detected-chart"></div>
+                <div id="day7-merged-total-clusters-chart"></div>
+                <div id="day7-merged-fmeasure-chart"></div>
+                <div id="day7-merged-precision-chart"></div>
+                <div id="day7-merged-recall-chart"></div>
             </main>
         </section>
     </div>

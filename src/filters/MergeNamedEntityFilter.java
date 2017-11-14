@@ -2,9 +2,7 @@ package filters;
 
 import model.Cluster;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class MergeNamedEntityFilter implements ClusterFilter {
 
@@ -24,18 +22,36 @@ public class MergeNamedEntityFilter implements ClusterFilter {
 
         Map<String, Cluster> clusterMap = new TreeMap<>();
 
-        for(Cluster cluster : clusters){
-            String namedEntity = cluster.getClusterNameEntity();
-            if(clusterMap.containsKey(namedEntity)){
-                Cluster c = clusterMap.get(namedEntity);
-                c.addAllTweets(cluster.getTweets());
-                clusterMap.replace(namedEntity, c);
-            } else {
-                clusterMap.put(namedEntity, cluster);
+        List<Cluster> previousClusters = new ArrayList<>();
+
+        for(Cluster cluster: clusters){
+
+            // add first element if empty
+            if(previousClusters.isEmpty()){
+                previousClusters.add(cluster);
+                continue;
             }
+
+            //go through previous clusters
+            for(int i = previousClusters.size() - 1; i >= 0; i--){
+                Cluster c = previousClusters.get(i);
+
+                //check timestamp difference
+                if(cluster.getTimestamp() - c.getTimestamp() > window){
+                    previousClusters.add(cluster);
+                    break;
+                }
+
+                if(cluster.getClusterNameEntity().equals(c.getClusterNameEntity())){
+                    // merge the two clusters
+                    c.addAllTweets(cluster.getTweets());
+                    break;
+                }
+            }
+
+            previousClusters.sort(Comparator.comparingLong(Cluster::getTimestamp));
         }
 
-        return clusterMap.values();
+        return previousClusters;
     }
-
 }

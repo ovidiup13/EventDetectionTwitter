@@ -1,14 +1,65 @@
 (function () {
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var target = $(e.target).attr("href");
+        switch (target) {
+            case "#1day-filtered":
+                fetch("assets/1day-filtered.json")
+                    .then(response => response.json())
+                    .then(jsonResponse => create1DayFilteredCharts(jsonResponse));
+                break;
+            case "#1day-merged":
+                fetch("assets/1day-merged.json")
+                    .then(response => response.json())
+                    .then(jsonResponse => create1DayMergedCharts(jsonResponse));
+                break;
+            case "#7days-filtered":
+                fetch("assets/7days-filtered.json")
+                    .then(response => response.json())
+                    .then(jsonResponse => create7DaysFilteredCharts(jsonResponse));
+                break;
+            case "#7days-merged":
+                fetch("assets/7days-merged.json")
+                    .then(response => response.json())
+                    .then(jsonResponse => create7DaysMergedCharts(jsonResponse));
+                break;
+        }
+    });
+
     fetch("assets/1day-filtered.json")
         .then(response => response.json())
-        .then(jsonResponse => createCharts(jsonResponse));
+        .then(jsonResponse => create1DayFilteredCharts(jsonResponse));
 
-    function createCharts(data) {
+    function create7DaysFilteredCharts(data) {
+        createEventsChart(data, "#day7-filtered-events-detected-chart");
+        createTotalClustersChart(data, "#day7-filtered-total-clusters-chart");
+        createFMeasureChart(data, "#day7-filtered-fmeasure-chart");
+        createPrecisionChart(data, "#day7-filtered-precision-chart");
+        createRecallChart(data, "#day7-filtered-recall-chart");
+    }
+
+    function create7DaysMergedCharts(data) {
+        createEventsChart(data, "#day7-merged-events-detected-chart");
+        createTotalClustersChart(data, "#day7-merged-total-clusters-chart");
+        createFMeasureChart(data, "#day7-merged-fmeasure-chart");
+        createPrecisionChart(data, "#day7-merged-precision-chart");
+        createRecallChart(data, "#day7-merged-recall-chart");
+    }
+
+    function create1DayFilteredCharts(data) {
         createEventsChart(data, "#day1-filtered-events-detected-chart");
         createTotalClustersChart(data, "#day1-filtered-total-clusters-chart");
         createFMeasureChart(data, "#day1-filtered-fmeasure-chart");
         createPrecisionChart(data, "#day1-filtered-precision-chart");
         createRecallChart(data, "#day1-filtered-recall-chart");
+    }
+
+    function create1DayMergedCharts(data) {
+        createEventsChart(data, "#day1-merged-events-detected-chart");
+        createTotalClustersChart(data, "#day1-merged-total-clusters-chart");
+        createFMeasureChart(data, "#day1-merged-fmeasure-chart");
+        createPrecisionChart(data, "#day1-merged-precision-chart");
+        createRecallChart(data, "#day1-merged-recall-chart");
     }
 
     function createEventsChart(data, elemId) {
