@@ -1,4 +1,4 @@
 data/
 scripts/node_modules/
 scripts/package-lock.json
-scripts/out
+scripts/public/assets

@@ -7,7 +7,7 @@ const parse = require("./parse");
 const inputPath = process.argv[2];
 
 const outputFile = process.argv[3];
-const outputPath = "../out/";
+const outputPath = "../public/assets";
 
 fs.readdir(inputPath, (err, items) => {
     runEval(items).then(data => {

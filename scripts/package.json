@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "frappe-charts": "0.0.5",
     "python-shell": "^0.4.0"
   }
 }
