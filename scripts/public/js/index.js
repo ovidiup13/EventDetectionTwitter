@@ -4,10 +4,31 @@
         .then(jsonResponse => createCharts(jsonResponse));
 
     function createCharts(data) {
+        createEventsChart(data, "#day1-filtered-events-detected-chart");
         createTotalClustersChart(data, "#day1-filtered-total-clusters-chart");
         createFMeasureChart(data, "#day1-filtered-fmeasure-chart");
         createPrecisionChart(data, "#day1-filtered-precision-chart");
         createRecallChart(data, "#day1-filtered-recall-chart");
+    }
+
+    function createEventsChart(data, elemId) {
+        const name = "Events Detected";
+        const chartType = "bar";
+        const color = "orange";
+
+        const labels = data.map(elem => elem.file);
+        const values = data.map(elem => elem.data.events.detected);
+
+        const chartData = {
+            labels: labels,
+            datasets: [{
+                title: name,
+                color: color,
+                values: values
+            }]
+        };
+
+        createChart(elemId, name, chartData, chartType);
     }
 
     function createTotalClustersChart(data, elemId) {
@@ -21,7 +42,7 @@
         const chartData = {
             labels: labels,
             datasets: [{
-                title: name,
+                title: "Clusters",
                 color: color,
                 values: values
             }]
