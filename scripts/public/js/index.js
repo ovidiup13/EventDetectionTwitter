@@ -1,109 +1,102 @@
-var myHeaders = new Headers();
+(function () {
+    fetch("assets/1day-filtered.json")
+        .then(response => response.json())
+        .then(jsonResponse => createCharts(jsonResponse));
 
-var myInit = {
-    method: 'GET',
-    headers: myHeaders,
-    mode: 'cors',
-    cache: 'default'
-};
+    function createCharts(data) {
+        createTotalClustersChart(data, "#day1-filtered-total-clusters-chart");
+        createFMeasureChart(data, "#day1-filtered-fmeasure-chart");
+        createPrecisionChart(data, "#day1-filtered-precision-chart");
+        createRecallChart(data, "#day1-filtered-recall-chart");
+    }
 
-fetch("assets/1day-filtered.json", myInit)
-    .then(response => response.json())
-    .then(jsonResponse => createCharts(jsonResponse));
+    function createTotalClustersChart(data, elemId) {
+        const name = "Total Clusters";
+        const chartType = "bar";
+        const color = "violet";
 
-function createCharts(data) {
-    createTotalClustersChart(data, "#day1-filtered-total-clusters-chart");
-    createFMeasureChart(data, "#day1-filtered-fmeasure-chart");
-    createPrecisionChart(data, "#day1-filtered-precision-chart");
-    createRecallChart(data, "#day1-filtered-recall-chart");
-}
+        const labels = data.map(elem => elem.file);
+        const values = data.map(elem => elem.data.clusters.total);
 
-function createTotalClustersChart(data, elemId) {
-    const name = "Total Clusters";
-    const chartType = "bar";
-    const color = "violet";
+        const chartData = {
+            labels: labels,
+            datasets: [{
+                title: name,
+                color: color,
+                values: values
+            }]
+        };
 
-    const labels = data.map(elem => elem.file);
-    const values = data.map(elem => elem.data.clusters.total);
+        createChart(elemId, name, chartData, chartType);
+    }
 
-    const chartData = {
-        labels: labels,
-        datasets: [{
-            title: name,
-            color: color,
-            values: values
-        }]
-    };
+    function createFMeasureChart(data, elemId) {
+        const name = "Overall F Measure";
+        const chartType = "line";
+        const color = "light-blue";
 
-    createChart(elemId, name, chartData, chartType);
-}
+        const labels = data.map(elem => elem.file);
+        const values = data.map(elem => elem.data.stats.fmeasure);
 
-function createFMeasureChart(data, elemId) {
-    const name = "Overall F Measure";
-    const chartType = "line";
-    const color = "light-blue";
+        const chartData = {
+            labels: labels,
+            datasets: [{
+                title: name,
+                color: color,
+                values: values
+            }]
+        };
 
-    const labels = data.map(elem => elem.file);
-    const values = data.map(elem => elem.data.stats.fmeasure);
+        createChart(elemId, name, chartData, chartType);
+    }
 
-    const chartData = {
-        labels: labels,
-        datasets: [{
-            title: name,
-            color: color,
-            values: values
-        }]
-    };
+    function createPrecisionChart(data, elemId) {
 
-    createChart(elemId, name, chartData, chartType);
-}
+        const name = "Precision";
+        const chartType = "line";
+        const color = "red";
 
-function createPrecisionChart(data, elemId) {
+        const labels = data.map(elem => elem.file);
+        const values = data.map(elem => elem.data.stats.precision);
 
-    const name = "Precision";
-    const chartType = "line";
-    const color = "red";
+        const chartData = {
+            labels: labels,
+            datasets: [{
+                title: name,
+                color: color,
+                values: values
+            }]
+        };
+        createChart(elemId, name, chartData, chartType);
+    }
 
-    const labels = data.map(elem => elem.file);
-    const values = data.map(elem => elem.data.stats.precision);
+    function createRecallChart(data, elemId) {
+        const name = "Recall";
+        const chartType = "line";
+        const color = "green";
 
-    const chartData = {
-        labels: labels,
-        datasets: [{
-            title: name,
-            color: color,
-            values: values
-        }]
-    };
-    createChart(elemId, name, chartData, chartType);
-}
+        const labels = data.map(elem => elem.file);
+        const values = data.map(elem => elem.data.stats.recall);
 
-function createRecallChart(data, elemId) {
-    const name = "Recall";
-    const chartType = "line";
-    const color = "green";
+        const chartData = {
+            labels: labels,
+            datasets: [{
+                title: name,
+                color: color,
+                values: values
+            }]
+        };
 
-    const labels = data.map(elem => elem.file);
-    const values = data.map(elem => elem.data.stats.recall);
+        createChart(elemId, name, chartData, chartType);
+    }
 
-    const chartData = {
-        labels: labels,
-        datasets: [{
-            title: name,
-            color: color,
-            values: values
-        }]
-    };
-
-    createChart(elemId, name, chartData, chartType);
-}
-
-function createChart(parentId, title, data, type) {
-    return new Chart({
-        parent: parentId, // or a DOM element
-        title: title,
-        data: data,
-        type: type, // or 'line', 'scatter', 'pie', 'percentage'
-        height: 250
-    });
-}
+    function createChart(parentId, title, data, type) {
+        return new Chart({
+            parent: parentId, // or a DOM element
+            title: title,
+            data: data,
+            type: type, // or 'line', 'scatter', 'pie', 'percentage'
+            height: 250
+        });
+    }
+})();

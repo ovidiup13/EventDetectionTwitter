@@ -15,10 +15,20 @@
 
     <header>
         <h1 id="title">Web Science - Event Detection Results</h1>
+        <div class="container">
+            <ul class="nav justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#1day" data-toggle="tab">1 Day</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#7days" data-toggle="tab">7 Days</a>
+                </li>
+            </ul>
+        </div>
     </header>
 
-    <div class="content">
-        <section>
+    <div class="tab-content content">
+        <section id="1day" class="tab-pane active">
             <header>
                 <h2>1 Day Data - Filtered</h2>
             </header>
@@ -29,7 +39,7 @@
                 <div id="day1-filtered-recall-chart"></div>
             </main>
         </section>
-        <section>
+        <section id="7days" class="tab-pane">
             <header>
                 <h2>1 Day Data - Merged</h2>
             </header>
@@ -48,7 +58,7 @@
         crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
         crossorigin="anonymous"></script>
-    <script src="./js/index.js"></script>
+    <script type='text/javascript' src="./js/index.js"></script>
 
 </body>
 
