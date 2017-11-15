@@ -1,4 +1,13 @@
 data/
+
 scripts/node_modules/
 scripts/package-lock.json
 scripts/public/assets
+
+gradle/
+.vscode
+.classpath
+.project
+build
+.settings
+.gradle
