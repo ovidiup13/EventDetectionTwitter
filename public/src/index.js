@@ -8,7 +8,6 @@ const inputPath = process.argv[2];
 const outputFile = process.argv[3];
 
 fs.readdir(inputPath, (err, items) => {
-    console.log(items);
     runEval(items).then(data => {
         data.sort((d1, d2) => parseInt(d1.file) - parseInt(d2.file));
         fs.writeFile(outputFile, JSON.stringify(data), err => {
