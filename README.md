@@ -8,7 +8,7 @@ Make sure you have the following installed:
 - Java 8
 - Gradle
 
-Make sure all the appropriate files are in the *./data* folder.
+Make sure all the appropriate data files are in the *./data/1day* and *./data/7days* folder.
 
 ## Running
 
