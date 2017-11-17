@@ -1,3 +1,5 @@
+echo "Creating temp folders"
+./pre.sh
 echo "Running filtering for 1 day data"
 ./filter-1day.sh
 echo "Running filtering for 7 days data"
