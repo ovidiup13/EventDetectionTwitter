@@ -1,4 +1,7 @@
-data/
+data/1day/*
+data/7days/*
+data/processed/
+data/*.docx
 
 public/node_modules/
 public/package-lock.json
