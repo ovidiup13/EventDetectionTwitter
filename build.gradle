@@ -20,6 +20,24 @@ sourceSets {
     }
 }
 
+task runFiltering (type: JavaExec, dependsOn: classes){
+    if(project.hasProperty('wsargs')){
+        args(wsargs.split())
+    }
+    description = "Filtering clusters of tweets by number, within [5, 25]."
+    main = "main.FilterByNumberOfTweets"
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task runMerging (type: JavaExec, dependsOn: classes){
+    if(project.hasProperty('wsargs')){
+        args(wsargs.split())
+    }
+    description = "Merging clusters with same named entity within a time window, with 7, 15, 30, 60, 120 and 240 minutes."
+    main = "main.MergeNamedEntities"
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 // In this section you declare where to find the dependencies of your project
 repositories {
     // Use 'jcenter' for resolving your dependencies.
@@ -38,4 +56,3 @@ dependencies {
     // 'test.useTestNG()' to your build script.
     testCompile 'junit:junit:4.12'
 }
-
