@@ -13,6 +13,8 @@
 \usepackage{multicol}
 \usepackage{minted}
 \usepackage{listings}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
 % \usepackage{csquotes}
 %\usepackage[normalem]{ulem}
 %% Please revise the following command, if your babel
@@ -58,14 +60,47 @@ The dataset provided has been pre-processed and organised into clusters.
 The missing stages, which is provided in this work, is cluster identification and event merging.
 The two approaches discussed here are:
 \begin{enumerate}
-	\item Filtering.
-	      Identify clusters which have limited or no relevance to any important events and remove them.
+	\item Filtering.\\
+	      \\
+	      The goal was to identify clusters which have limited or no relevance to any important events and remove them.\\
+	      \\
 	      This step may be considered as an enhancement of Cluster Identification.
-	      The goal was to see whether removing clusters with a specific number of tweets might reduce the resulting data set returned and thus increase precision of the system.
-	\item Merging.
-	      The goal was to study whether clusters with the same named entity, lying within the same temporal burst can be considered a single event.
+	      More specifically, the objective was to see whether removing clusters with a particular number of tweets might reduce the resulting data set returned, resulting in an increased precision of the system. \\
+	      \\
+	      The filtering step is simple, as it consists of counting the number of tweets in each cluster, and dropping clusters with a size less than a number \textit{N}.
+
+	\item Merging. \\
+	      \\
+	      The goal was to study whether clusters with the same named entity, lying within the same temporal burst can be considered a single event. \\
+	      \\
 	      In McMinn's study, clustering of tweets was optimised performance wise by reducing the number of tweets retrieved from the Inverted Index and thus reducing the number of comparisons for each tweet to be added to a cluster.
-	      Thus, we wanted to know whether multiple clusters with the same event (and same named entity) have been created within a specific time period and if merging of these clusters would have a positive effect on the performance of the system.
+	      Thus, we wanted to know whether multiple clusters with the same event (and same named entity) have been created within a specific time period and if merging of these clusters would have a positive effect on the performance of the system. \\
+	      \\
+	      Clusters with the same named identity residing in the same temporal window are merged.
+	      The merge action is simply the addition of all tweets in the selected cluster to its match.
+		  Comparison of window temporality are executed by the difference between the centroid times of two clusters, where the centroid time is the mean of all the tweets in a cluster.\\
+		  
+		  The computationally expensive section of this approach is that the previous array of clusters must be kept sorted by time.
+		  For each processed cluster, the first cluster to compare it against must be the most \"recent\" in order for this approach to work. 
+		  Thus, every time a new cluster gets added to the \textit{previousCluster} array or the centroid time of a cluster is updated, then the array must be re-sorted.\\
+		  Fortunately, since only one cluster is updated at a time, the sort operation is computationally inexpensive (\textit{O}(\textit{N}) on nearly sorted array, using Bubble Sort.) 
+	      \\\\
+	      Pseudocode:
+	      \begin{algorithmic}
+		      \ForAll{$cluster$ of $clusters$}
+				\ForAll{$previous$ of $previousClusters$}
+					\If{$cluster.timestamp - previous.timestamp\geq window$}
+						\State $previousClusters.add(cluster)$
+						\State $break$
+					\EndIf
+					\If{$cluster.entity = previous.entity$}
+						\State $previous.addTweets(cluster.tweets)$
+						\State $break$
+					\EndIf
+				\EndFor
+				\State $previousClusters.sort()$
+		      \EndFor
+	      \end{algorithmic}
 \end{enumerate}
 
 The evaluation and discussion of the two approaches are dicusses in Section \ref{section-eval} and Section \ref{section-discussion}.
