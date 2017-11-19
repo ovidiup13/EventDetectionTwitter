@@ -68,13 +68,13 @@ The two approaches discussed here are:
 	      More specifically, the objective was to see whether removing clusters with a particular number of tweets might reduce the resulting data set returned, resulting in an increased precision of the system. \\
 	      \\
 	      The filtering step is simple, as it consists of counting the number of tweets in each cluster, and dropping clusters with a size less than a number \textit{N}.
-
+	      In this work, \textit{N} takes values from [5, 25].
 	\item Merging. \\
 	      \\
 	      The goal was to study whether clusters with the same named entity, lying within the same temporal burst can be considered a single event. \\
 	      \\
 	      In McMinn's study, clustering of tweets was optimised performance wise by reducing the number of tweets retrieved from the Inverted Index and thus reducing the number of comparisons for each tweet to be added to a cluster.
-	      Thus, we wanted to know whether multiple clusters with the same event (and same named entity) have been created within a specific time period and if merging of these clusters would have a positive effect on the performance of the system. \\
+	      Thus, the initil objective was to check whether multiple clusters with the same event (and same named entity) have been created within a specific time period and if merging of these clusters would have a positive effect on the performance of the system.\\
 	      \\
 	      Clusters with the same named identity residing in the same temporal window are merged.
 	      The merge action is simply the addition of all tweets in the selected cluster to its match.
@@ -84,6 +84,8 @@ The two approaches discussed here are:
 	      For each processed cluster, the first cluster to compare it against must be the most \"recent\" in order for this approach to work.
 	      Thus, every time a new cluster gets added to the \textit{previousCluster} array or the centroid time of a cluster is updated, then the array must be re-sorted.\\
 	      Fortunately, since only one cluster is updated at a time, the sort operation is computationally inexpensive (\textit{O}(\textit{N}) on nearly sorted array, using Bubble Sort.)
+
+	      The window was tested with values (in minutes): 7, 15, 30, 60, 120 and 240.
 	      \\\\
 	      Pseudocode:
 	      \begin{algorithmic}
@@ -201,7 +203,7 @@ The rest of the properties are self-descriptive.\\
 
 Once all files have been evaluated, the JSON schemas are loaded into a JavaScript browser file.
 This JavaScript file contains logic that constructs visualizations of the evaluation results.
-The charting functionality is provided by the frappe-charts package \cite{frappeCharts}.\\\\
+The charting functionality is provided by the frappe-charts package \cite{frappeCharts}.\\
 
 The source code is available in the \textit{source.zip} file as well as instructions on how to run the code contained in the \textit{README.md} file.
 
@@ -209,16 +211,75 @@ The source code is available in the \textit{source.zip} file as well as instruct
 \section{Evaluation}
 \label{section-eval}
 
-The evaluation of the two approaches relies on two measures:
+The evaluation of the two approaches relies on a few measures:
 \begin{itemize}
-	\item \textbf{Precision}. This measure signifies the proportion of the clusters that are relevant, which relate to an event.
-	      This measure is the opposite of the fraction of data which is considered \"junk\".
-	\item \textbf{Recall}. Defines the fraction of clusters that were found to be relevant.
-	      This measure cannot increase further than its value from the initial clusters provided since the data set is fixed.
+	\item \textbf{Precision}.
+	      This measure signifies the proportion of the clusters that are relevant out of the returned set of events.
+	\item \textbf{Recall}.
+	      Defines the fraction of clusters that were found to be relevant out of the entire set of relevant events.
+	      This measure cannot increase further than its value from the initial clusters provided, since it is largely dependent on the clustering step.
 	\item \textbf{F-Measure}.
+	      It is an overall score of performance, and is calculated as the weighted harmonic mean of the precision and recall measures.
 \end{itemize}
 
-Since recall precision cannot increase, then the evaluation focuses on increased precision with minimal negative impact to recall.
+Since recall precision cannot increase, then the evaluation focuses on increased precision with minimal negative impact to recall.\\
+\\
+Initially, the two baseline CSV files containing 1 day and 7 days data have been evaluated.
+In the following figures, the element \textbf{0} on the \textit{x}-axis, is considered the baseline result.
+The rest of the elements, can be considered in the context of either filtering or merging.
+For example, the element \textbf{8} in the context of filtering, refers to the clusters which have been filtered by a minimum of 8 tweets.
+Additionally, the element \textbf{30} in the context of merging, refers to the window value of 30 minutes.
+
+A summary of the results, based on the f-measure for all sets can be seen in \ref{fig:summary}.
+Additionally, the full charts of the experiment can be viewed in Appendix \ref{appendix:results}.
+
+\begin{enumerate}
+	\item \textbf{Filtering}\\
+	      Filtering by number of tweets has a massive effect on the initial results of the data set. \\
+	      Applying the filtering process on the 1 day data set, increased the precision of by a magnitude while the recall measure remained constant.
+	      The change in precision may be due to junk clusters returned that have no relevance to the results.
+	      \begin{figure}[h!]
+		      \centering
+		      \includegraphics[width=\linewidth]{images/1day-filtered-f-measure.png}
+		      \caption{1 Day Filtered - F-Measure}
+		      \label{fig:1day-filtered-f-measure}
+	      \end{figure}
+
+	      As mentioned before, \textit{N} was tested within a range of [5, 25] and the results can be seen in Figure \ref{fig:1day-filtered-f-measure}.
+	      The overall f-measure jumped from the initial evaluation and slowly increased up until \textit{N = 10}.
+	      The f-measure slowly decreased thereafter, due to the number of relevant clusters being slowly filtered out.
+	      This negatively impacted the recall measurement, from a base measure of 0.038 to 0.28.
+	      On the other hand, precision increased dramatically as the number of clusters on each experiment decreased.
+	      \\
+	      Finally, for the 1-day data set, the optimal number of tweets in a cluster was 10.
+	      This provided the highest f-measure of the entire range [5, 25] and with recall remaining constant.
+
+	      Applying the same process on the 7-day data set, similar results emerged.
+	      The overall f-measure jumped from the initial value of 0.026 to a maximum value of 0.242, for \textit{N = 11}.
+	      Precision increased with incremental of \textit{N} while recall had slowly decreased, but with no major impact.
+	      The trend of the f-measure for the 7-day data set can be seen in Figure \ref{fig:7days-filtered-f-measure}.
+	      \begin{figure}[h!]
+		      \centering
+		      \includegraphics[width=\linewidth]{images/7days-filtered-f-measure.png}
+		      \caption{7 Days Filtered - F-Measure}
+		      \label{fig:7days-filtered-f-measure}
+	      \end{figure}
+
+	\item \textbf{Merging}\\
+	      \begin{figure}[h!]
+		      \centering
+		      \includegraphics[width=\linewidth]{images/1day-merged-f-measure.png}
+		      \caption{1 Day Merged - F-Measure}
+		      \label{fig:1day-merged-f-measure}
+	      \end{figure}
+
+	      \begin{figure}[h!]
+		      \centering
+		      \includegraphics[width=\linewidth]{images/7days-merged-f-measure.png}
+		      \caption{7 Days Merged - F-Measure}
+		      \label{fig:7days-merged-f-measure}
+	      \end{figure}
+\end{enumerate}
 
 \begin{enumerate}
 	\item Data collection discussion
@@ -228,9 +289,9 @@ Since recall precision cannot increase, then the evaluation focuses on increased
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\linewidth]{images/1day-filtered-f-measure.png}
-	\caption{1 Day Filtered - F-Measure}
-	\label{fig:1day-filtered-f-measure}
+	\includegraphics[width=\linewidth]{images/summary.png}
+	\caption{Summary of results}
+	\label{fig:summary}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -253,5 +314,166 @@ Since recall precision cannot increase, then the evaluation focuses on increased
 \nocite{*}
 \bibliographystyle{plain}
 \bibliography{bibliography}
+\pagebreak
+
+% Activate the appendix
+% from now on sections are numerated with capital letters
+\appendix
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experiment Results}
+\label{appendix:results}
+
+\subsection{1-day Data-Set}
+\subsubsection{Filtering}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/1day-filtered-events-detected.png}
+	\caption{1-Day Filtered Events Detected}
+	\label{fig:1day-filtered-events-detected}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/1day-filtered-total-clusters.png}
+	\caption{1-Day Filtered Total Clusters}
+	\label{fig:1day-filtered-total-clusters}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/1day-filtered-precision.png}
+	\caption{1-Day Filtered Precision}
+	\label{fig:1day-filtered-precision}
+\end{figure}
+
+\begin{figure}[]
+	\centering
+	\includegraphics[width=\linewidth]{images/1day-filtered-recall.png}
+	\caption{1-Day Filtered Recall}
+	\label{fig:1day-filtered-recall}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/1day-filtered-f-measure.png}
+	\caption{1-Day Filtered F-Measure}
+	\label{fig:1day-filtered-f-measure}
+\end{figure}
+
+\subsubsection{Merging}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/1day-merged-events-detected.png}
+	\caption{1-Day Merged Events Detected}
+	\label{fig:1day-merged-events-detected}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/1day-merged-total-clusters.png}
+	\caption{1-Day Merged Total Clusters}
+	\label{fig:1day-merged-total-clusters}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/1day-merged-precision.png}
+	\caption{1-Day Merged Precision}
+	\label{fig:1day-merged-precision}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/1day-merged-recall.png}
+	\caption{1-Day Merged Recall}
+	\label{fig:1day-merged-recall}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/1day-merged-f-measure.png}
+	\caption{1-Day Merged F-Measure}
+	\label{fig:1day-merged-f-measure}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{7-day Data-Set}
+\subsubsection{Filtering}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/7days-filtered-events-detected.png}
+	\caption{7-Day Filtered Events Detected}
+	\label{fig:7day-filtered-events-detected}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/7days-filtered-total-clusters.png}
+	\caption{7-Day Filtered Total Clusters}
+	\label{fig:7days-filtered-total-clusters}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/7days-filtered-precision.png}
+	\caption{7-Day Filtered Precision}
+	\label{fig:7days-filtered-precision}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/7days-filtered-recall.png}
+	\caption{7-Day Filtered Recall}
+	\label{fig:7days-filtered-recall}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/7days-filtered-f-measure.png}
+	\caption{7-Day Filtered F-Measure}
+	\label{fig:7days-filtered-f-measure}
+\end{figure}
+
+\subsubsection{Merging}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/7days-merged-events-detected.png}
+	\caption{1-Day Merged Events Detected}
+	\label{fig:7days-merged-events-detected}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/7days-merged-total-clusters.png}
+	\caption{1-Day Merged Total Clusters}
+	\label{fig:7days-merged-total-clusters}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/7days-merged-precision.png}
+	\caption{1-Day Merged Precision}
+	\label{fig:7days-merged-precision}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/7days-merged-recall.png}
+	\caption{1-Day Merged Recall}
+	\label{fig:7days-merged-recall}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{images/7days-merged-f-measure.png}
+	\caption{1-Day Merged F-Measure}
+	\label{fig:7days-merged-f-measure}
+\end{figure}
+
 
 \end{document}
