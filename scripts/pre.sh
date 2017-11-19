@@ -1,4 +1,6 @@
-cd ../data
+cd ../public/public
+mkdir assets
+cd ../../data
 mkdir processed
 cd processed
 mkdir 1day 7days
