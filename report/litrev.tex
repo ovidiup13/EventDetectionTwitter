@@ -78,27 +78,27 @@ The two approaches discussed here are:
 	      \\
 	      Clusters with the same named identity residing in the same temporal window are merged.
 	      The merge action is simply the addition of all tweets in the selected cluster to its match.
-		  Comparison of window temporality are executed by the difference between the centroid times of two clusters, where the centroid time is the mean of all the tweets in a cluster.\\
-		  
-		  The computationally expensive section of this approach is that the previous array of clusters must be kept sorted by time.
-		  For each processed cluster, the first cluster to compare it against must be the most \"recent\" in order for this approach to work. 
-		  Thus, every time a new cluster gets added to the \textit{previousCluster} array or the centroid time of a cluster is updated, then the array must be re-sorted.\\
-		  Fortunately, since only one cluster is updated at a time, the sort operation is computationally inexpensive (\textit{O}(\textit{N}) on nearly sorted array, using Bubble Sort.) 
+	      Comparison of window temporality are executed by the difference between the centroid times of two clusters, where the centroid time is the mean of all the tweets in a cluster.\\
+
+	      The computationally expensive section of this approach is that the previous array of clusters must be kept sorted by time.
+	      For each processed cluster, the first cluster to compare it against must be the most \"recent\" in order for this approach to work.
+	      Thus, every time a new cluster gets added to the \textit{previousCluster} array or the centroid time of a cluster is updated, then the array must be re-sorted.\\
+	      Fortunately, since only one cluster is updated at a time, the sort operation is computationally inexpensive (\textit{O}(\textit{N}) on nearly sorted array, using Bubble Sort.)
 	      \\\\
 	      Pseudocode:
 	      \begin{algorithmic}
 		      \ForAll{$cluster$ of $clusters$}
-				\ForAll{$previous$ of $previousClusters$}
-					\If{$cluster.timestamp - previous.timestamp\geq window$}
-						\State $previousClusters.add(cluster)$
-						\State $break$
-					\EndIf
-					\If{$cluster.entity = previous.entity$}
-						\State $previous.addTweets(cluster.tweets)$
-						\State $break$
-					\EndIf
-				\EndFor
-				\State $previousClusters.sort()$
+		      \ForAll{$previous$ of $previousClusters$}
+		      \If{$cluster.timestamp - previous.timestamp\geq window$}
+		      \State $previousClusters.add(cluster)$
+		      \State $break$
+		      \EndIf
+		      \If{$cluster.entity = previous.entity$}
+		      \State $previous.addTweets(cluster.tweets)$
+		      \State $break$
+		      \EndIf
+		      \EndFor
+		      \State $previousClusters.sort()$
 		      \EndFor
 	      \end{algorithmic}
 \end{enumerate}
@@ -107,8 +107,7 @@ The evaluation and discussion of the two approaches are dicusses in Section \ref
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Code Description}
-The code has been written in Java, due its object-oriented structure, efficiency and ability to handle 64-bit Integer values available from the data set.
-UML diagrams and descriptions are provided.\\
+The implementation of the techniques were written in Java, due its object-oriented structure, efficiency and ability to handle 64-bit Integer values available from the data set.
 
 \begin{figure}[h!]
 	\centering
@@ -117,11 +116,12 @@ UML diagrams and descriptions are provided.\\
 	\label{fig:modelUML}
 \end{figure}
 
-Initially, two model classes have been defined, as seen in Figure \ref{fig:modelUML}. The first class, Tweet, contains the appropriate fields for identifying a tweet, such as: tweet ID, timestamp, user ID, parsed tweet tokens and the body text of the tweet.
+Initially, two model classes have been defined, as seen in Figure \ref{fig:modelUML}.
+The first class, Tweet, contains the appropriate fields for identifying a tweet, such as: tweet ID, timestamp, user ID, parsed tweet tokens and the body text of the tweet.
 Additionally, a second model class defined is Cluster, which references the previous class tweet. Cluster class contains a list of tweets with the same properties and is defined by a cluster ID, by the named entity which are identified by all the tweets and a timestamp which, we'll see in the next paragraphs, will hold the centroid time of all tweets in that specific cluster.\\
 
 The data set is read from local disk through an instance of IOProcessor, which is an interface for reading data.
-Since the data set is in CSV format, a class CSVProcessor implementing the IOProcessor interface has been defined.
+Since the data is in CSV format, a class CSVProcessor implementing the IOProcessor interface has been defined.
 It provides methods for reading CSV cluster files and instantiating model classes to be used in the logic of the system.
 Diagram for Processor classes can be seen in Figure \ref{fig:processorUML}. \\
 
@@ -132,12 +132,14 @@ Diagram for Processor classes can be seen in Figure \ref{fig:processorUML}. \\
 	\label{fig:processorUML}
 \end{figure}
 
-Data is read and processed as streams of Cluster objects on which multiple sequential operations can be applied.
-ClusterFilter is an interface that can be extended to add more available operations. The available operations, as seen in \ref{fig:filterUML}, are:
+Data is read and processed as a stream of Cluster objects on which multiple sequential operations can be applied.
+ClusterFilter is an interface that can be extended to add more available operations.
+The available operations, as seen in \ref{fig:filterUML}, are:
 \begin{itemize}
 	\item NumberOfTweetsFilter - is a class that filters the cluster by a set number of tweets.
-	\item CentroidCalculationFilter - provides a method for calculating the centroid time for each cluster within the stream.
-	\item MergeNamedEntityFilter - is a filter that merges clusters with the same named entities. A time difference can be set that merges cluster with their centroid time within the same time difference.
+	      A variable containing the number of tweets to filter by can be passed to the constructor of this class.
+	\item MergeNamedEntityFilter - is a filter that merges clusters with the same named entities.
+	      A variable denoting the time window can be initialized from the constructor of this class.
 \end{itemize}
 
 \begin{figure}[h!]
@@ -148,7 +150,9 @@ ClusterFilter is an interface that can be extended to add more available operati
 \end{figure}
 
 Each one of these filters can be applied in any sequence and the entire code can be run into a class containing the main function.
-Once all the operations are applied on the stream, the clusters are written back to the file, with the help of CSVProcessor.
+The Main class contains references to the other model, processor and filter classes and contains the entire flow of the system.
+For the two approaches, two main classes have been defined.
+The classes read data from IOProcessor, apply the filtering and merging operations on the stream of data and write the resulting clusters back to a new CSV file.
 
 \begin{figure}[h!]
 	\centering
@@ -186,9 +190,20 @@ The JSON schema is as follows:
 ]
 \end{lstlisting}
 
-Once all files have been evaluated, the JSON schema is loaded into a JavaScript file, included into an HTML file which will display the results in a nice format using frappe-charts package (TODO: Add link to frappe-charts).
-The source code is available in the source zip as well as with the instructions on how to run the code.
+The schema contains a number of properties, of which the most important are:
+\begin{itemize}
+	\item \textit{file} - this denotes the file that was used for evaluation.
+	      For example, in the case of filtering approach, a file with the name \textit{8.csv} denotes that a filtering of a minimum number of 8 tweets has been applied to the initial dataset.
+	\item \textit{data} - this property contains an object of the statistics of the evaluation.
+\end{itemize}
 
+The rest of the properties are self-descriptive.\\
+
+Once all files have been evaluated, the JSON schemas are loaded into a JavaScript browser file.
+This JavaScript file contains logic that constructs visualizations of the evaluation results.
+The charting functionality is provided by the frappe-charts package \cite{frappeCharts}.\\\\
+
+The source code is available in the \textit{source.zip} file as well as instructions on how to run the code contained in the \textit{README.md} file.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evaluation}
