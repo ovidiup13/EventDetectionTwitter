@@ -53,11 +53,11 @@ Following the work of McMinn et al. \cite{McMinn2013}, the steps taken in the pr
 	\item Clustering. The data set contained clusters of tweets already defined, through the use of an Inverted Index and tweets grouped together using weight cosine similarity score.
 	\item Burst Detection. Check for temporal bursts of a named entity in a window period of minutes to hours. This step was completed in conjunction with event merging.
 	\item Cluster Identification. In McMinn et al. \cite{McMinn2013} evaluation program, clusters are already considered to map to a specific event since clusters with no named entities have been removed.
-	\item Event Merging. Merging events with multiple entities since  Discussion of this work is focused on this step.
+	\item Event Merging. Merging events that have multiple named entities. Discussion of this work is focused on this step.
 \end{itemize}
 
 The dataset provided has been pre-processed and organised into clusters.
-The missing stages, which is provided in this work, is cluster identification and event merging.
+The missing stages, which is provided in this work, is an enhancement to cluster identification and a different take on event merging.
 The two approaches discussed here are:
 \begin{enumerate}
 	\item Filtering.\\
@@ -71,14 +71,14 @@ The two approaches discussed here are:
 	      In this work, \textit{N} takes values from [5, 25].
 	\item Merging. \\
 	      \\
-	      The goal was to study whether clusters with the same named entity, lying within the same temporal burst can be considered a single event. \\
+	      The goal was to study whether clusters with the same named entity, lying within the same temporal burst can be merged in the same cluster. \\
 	      \\
-	      In McMinn's study, clustering of tweets was optimised performance wise by reducing the number of tweets retrieved from the Inverted Index and thus reducing the number of comparisons for each tweet to be added to a cluster.
+		  In McMinn's study, clustering of tweets was optimised performance wise by reducing the number of tweets retrieved from the Inverted Index and, thus, reducing the number of comparisons for each tweet.
 	      Thus, the initil objective was to check whether multiple clusters with the same event (and same named entity) have been created within a specific time period and if merging of these clusters would have a positive effect on the performance of the system.\\
 	      \\
 	      Clusters with the same named identity residing in the same temporal window are merged.
-	      The merge action is simply the addition of all tweets in the selected cluster to its match.
-	      Comparison of window temporality are executed by the difference between the centroid times of two clusters, where the centroid time is the mean of all the tweets in a cluster.\\
+	      The merge action is simply the addition of all tweets from the selected cluster to its named entity match.
+	      Comparison of window temporality is executed using the difference between the centroid times of two clusters, where the centroid time is the mean of all the tweets in a cluster.\\
 
 	      The computationally expensive section of this approach is that the previous array of clusters must be kept sorted by time.
 	      For each processed cluster, the first cluster to compare it against must be the most \"recent\" in order for this approach to work.
@@ -141,7 +141,12 @@ The available operations, as seen in \ref{fig:filterUML}, are:
 	\item NumberOfTweetsFilter - is a class that filters the cluster by a set number of tweets.
 	      A variable containing the number of tweets to filter by can be passed to the constructor of this class.
 	\item MergeNamedEntityFilter - is a filter that merges clusters with the same named entities.
-	      A variable denoting the time window can be initialized from the constructor of this class.
+		  A variable denoting the time window can be initialized from the constructor of this class.
+		  To speed up the performance of the filter, a map indexed by entities to list of clusters is used.
+		  Every time a new cluster must be processed, the list of clusters with the same entity is retrieved from the map. 
+		  This approach reduces the amount of clusters to compare to however, through creating a more complex data structure with the map of arrays.
+		  In short, this approach trades off space complexity for time complexity. 
+
 \end{itemize}
 
 \begin{figure}[h!]
@@ -153,7 +158,7 @@ The available operations, as seen in \ref{fig:filterUML}, are:
 
 Each one of these filters can be applied in any sequence and the entire code can be run into a class containing the main function.
 The Main class contains references to the other model, processor and filter classes and contains the entire flow of the system.
-For the two approaches, two main classes have been defined.
+For the two approaches, two main classes have been defined: \textit{MergeNamedEntities.java} and \textit{FilterByNumberOfTweets.java}.
 The classes read data from IOProcessor, apply the filtering and merging operations on the stream of data and write the resulting clusters back to a new CSV file.
 
 \begin{figure}[h!]
@@ -163,12 +168,13 @@ The classes read data from IOProcessor, apply the filtering and merging operatio
 	\label{fig:mainUML}
 \end{figure}
 
-The evaluation stage was the same as McMinn et al. \cite{McMinn2013}, and used a python script to evaluate the CSV files containing the clusters against crowd gathered events.
+The evaluation stage was the same as McMinn et al. \cite{McMinn2013}, which used a python script to evaluate the CSV files containing the clusters against crowd gathered events.
 Additionally, due to the repetitive nature of the approaches, evaluating each CSV cluster file, gathering of results and manually pasting them into a data processor (e.g. Excel) may take a long time.
 For this problem, a Gradle tasks was implemented that automatically run the two Java programs and generate all the files using only one command.
 To gather the results from the output of the Python evaluation program, a NodeJS script has been developed that runs the evaluation automatically and creates a JSON containing the respective results for the analysis.
 For example, all the results for the 1 day dataset with the filtering approach applied, would be contained within a single JSON file 1day-filtered.json.
 The JSON schema is as follows:
+
 \begin{lstlisting}[caption=JSON Schema Example, label=json-schema]
 [{
     "file": "0",
@@ -217,7 +223,7 @@ The evaluation of the two approaches relies on a few measures:
 	      This measure signifies the proportion of the clusters that are relevant out of the returned set of events.
 	\item \textbf{Recall}.
 	      Defines the fraction of clusters that were found to be relevant out of the entire set of relevant events.
-	      This measure cannot increase further than its value from the initial clusters provided, since it is largely dependent on the clustering step.
+	      This measure, in theory, cannot increase further than its baseline value, since it is largely dependent on the clustering step.
 	\item \textbf{F-Measure}.
 	      It is an overall score of performance, and is calculated as the weighted harmonic mean of the precision and recall measures.
 \end{itemize}
@@ -235,8 +241,9 @@ Additionally, the full charts of the experiment can be viewed in Appendix \ref{a
 
 \begin{enumerate}
 	\item \textbf{Filtering}\\
-	      Filtering by number of tweets has a massive effect on the initial results of the data set. \\
-	      Applying the filtering process on the 1 day data set, increased the precision of by a magnitude while the recall measure remained constant.
+	\\
+	      Filtering by number of tweets has a massive effect on the results of the evaluation. \\
+	      Applying the filtering process on the 1-day data set, increased the precision of by a magnitude while the recall measure remained constant.
 	      The change in precision may be due to junk clusters returned that have no relevance to the results.
 	      \begin{figure}[h!]
 		      \centering
@@ -266,13 +273,29 @@ Additionally, the full charts of the experiment can be viewed in Appendix \ref{a
 	      \end{figure}
 
 	\item \textbf{Merging}\\
+	\\
+		  By contrast with the filtering approach, merging step gave surprising results.
+		  For the 1-day dataset, the overall f-measure is lower than the filtering approach, due to precision and the amount of clusters still remaining, as seen in Figure \ref{fig:1day-merged-f-measure}.
+		  \\\\
+		  Although the total clusters have been reduced by up to 50\% compared to the base line, there still remain thousands of clusters compared to the filtering approach where this number has been reduced to less than 500.
+		  Nevertheless, f-measure has increased over the baseline measure, from 0.020 to 0.024 at its highest.  
+		  Precision has slowly increased along with the time window, since there were more clusters with the same named entity indentified in a larger temporal space.
+		  However, the surprising measure to have increased was recall from 0.038 baseline to 0.04.
+		  Moreover, the number of events detected has increased from initial baseline 19, to 20. 
 	      \begin{figure}[h!]
-		      \centering
+		      \centering 
 		      \includegraphics[width=\linewidth]{images/1day-merged-f-measure.png}
 		      \caption{1 Day Merged - F-Measure}
 		      \label{fig:1day-merged-f-measure}
-	      \end{figure}
-
+		  \end{figure}
+		  
+		  Similar results were registered for the 7-day data set. \\
+		  The overall f-measure has increased from its baseline value, to a high of 0.36 for window values of 240 and 480 minutes.
+		  Interestingly enough, the events detected by the evaluation script has increased as well, from 106 baseline to 112.
+		  \\
+		  Moreover, recall followed the trend set by the 1-day dataset and increased from 0.209 initially to 0.221 for window of 240 and 480 minutes respectively. 
+		  The number of clusters has steadily decreased as the window grows, which was expected.
+		  As a result, the precision measure of the system has grown as well.
 	      \begin{figure}[h!]
 		      \centering
 		      \includegraphics[width=\linewidth]{images/7days-merged-f-measure.png}
@@ -281,11 +304,20 @@ Additionally, the full charts of the experiment can be viewed in Appendix \ref{a
 	      \end{figure}
 \end{enumerate}
 
-\begin{enumerate}
-	\item Data collection discussion
-	\item Explain evaluation measures and report the measures
-	\item critically comment on results
-\end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion}
+\label{section-discussion}
+
+The summary of the results can be seen in Figure \ref{fig:summary}.
+The table shows the baseline results, along with the results with the highest f-measures of the two approaches applied on both data sets.\\
+\\
+From the results, there are a few interesting conclusions to draw. 
+The first, is that the filtering step enhances the cluster identification step from McMinn's study \cite{McMinn2013} and greatly increases the evaluation results without any impact on the recall measure.
+This can be said for both data sets.
+As a result of the filtering process, the precision skyrocketed as well as the f-measure by an order of magnitude. \\
+In terms of scalability, this step can be easily implemented on a stream of clusters as it is simply a case of pass/drop by comparing sizes.
+However, one must be careful when choosing the variable to sort by.
+Relevant clusters may easily be dropped if not handled carefully and thus may have a negative impact on recall.
 
 \begin{figure}[h!]
 	\centering
@@ -294,14 +326,20 @@ Additionally, the full charts of the experiment can be viewed in Appendix \ref{a
 	\label{fig:summary}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Discussion}
-\label{section-discussion}
-\begin{enumerate}
-	\item scalability, usability, effectiveness, efficiency, etc.
-	\item applications of the method
-	\item justify with data/information
-\end{enumerate}
+By contrast, the merging approach did not attain the same highs results.
+Still, the results were surprising since recall was not expected to increase further than the baseline.
+This might be due the increase in the number of events detected.
+It increased by a few values (by 1 in the 1-day dataset, by 6 in 7-day).
+As a result, this might be considered an enhancement of the clustering step, where multiple clusters with the same named entity was created. 
+It might be due to some users tweeting a number of minutes later than the event occurred.
+\\\\
+In theory, it is an unharmful operation if there are no other clusters with the same named entity in the same timed window.
+Additionally, it would be interesting to find what the results are with the filtering step applied before the merge.
+In theory, it should get rid of the small clusters with no relevance to an event, but as mentioned earlier, care must be taken with the variable on which to filter on.
+\\
+However, there are major setbacks to this approach.
+The worst one is in the case where multiple events occurred in a period, all related to the same entity. 
+This approach would fail at picking up both events. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Traffic Event Detection}
