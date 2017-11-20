@@ -355,12 +355,38 @@ Still, as mentioned earlier, care must be taken with the variable on which to fi
 However, there could be a major setbacks to the merging of same named entity clusters.
 A possible worst case would be in the case where two or more events occurred within minutes of each other, all related to the same entity, but considered as two different events. 
 This approach would fail at picking up all the events and, instead, returning only a single one. 
+\\\\
+Finally, both approaches provide an enhacement for event detection provided by McMinn's \cite{McMinn2013}.
+However, it is arguable whether they could be used in real-time systems.
+Filtering clusters in real-time is challenging, since it would be difficult to say what is relevant and what is not purely based on number of tweets in a current cluster.
+Merging of selected clusters might provide more concise data through merging events with the same entity, but would fail in the case where two events with the same entity occurred in the same temporal space.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Traffic Event Detection}
 \subsection{Problem Statement}
-\subsection{Proposed Solution}
-\subsection{Discussion}
+
+Traffic blockages and congestions are more and more important in the daily lives of commuters, public transport drivers and for the general "health" of the city.
+In the UK alone, the average commuter would spend 32 hours on in traffic each year and drivers spend an additional 9\% of their time driving as per the INRIX Scorecard for UK 2016 \cite{INRIXdata}. 
+
+Efficient solutions to traffic problems are still to be found.
+An interesting idea, provided by Elon Musk's company, named ironically \textit{The Boring Company}, is to create tunnels under the city in order to reduce congestion in the city of Los Angeles.
+This idea came through due to Elon's time wasted in traffic, as per his interview \cite{ElonTED}.
+
+However, there is a need to find an alternative and more efficient solution rather than digging holes in the ground.
+This is where social media data provides an alternative for a cheap and efficient way to share traffic information.
+If accidents, congestions, traffic issues could be reported via Twitter.
+A social media platform, such as Twitter, already provides up-to-date real-time information and this data could be used for trafic analysis.
+
+Nevertheless, the issues with Twitter remain, as mentioned before, as well as:
+\begin{itemize}
+	\item Geo-tagging. Only 10\% of daily tweets are geo-tagged. For a traffic analysis solution to work consistenly, geo-location is a must.
+	However, if no such data is provided, there must be a method for extracting valuable data from the body text and complete the geographical information issue.
+	\item Temporality. It is important that tweets are grouped according to time. 
+	Most up-to-date information is essential for avoiding the increase of congestion.
+	\item Trust. Information must be relevant either by coming from multiple sources or by analysis of trusted sources.
+	An example of a trusted source is Transport For London (TFL), which posts hourly updates on its Twitter account.    
+\end{itemize}
+
 
 %==============================================annotated bibliography
 \newpage
